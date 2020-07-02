@@ -1,34 +1,40 @@
-objects = build/test.o build/AudioPlayer.o build/NotePicker.o \
-	  build/SignalGenerator.o build/SignalReader.o
+vpath %.cpp src src/core
+vpath %.h src src/core
+
+objdir = build
+objects = $(addsuffix .o, $(addprefix $(objdir)/, test AudioPlayer NotePicker \
+	  SignalGenerator SignalReader))
 
 
-bin/test: bin/ build/ $(objects)
-	g++ $(objects) lib/libportaudio.a lib/*.o -lrt -lm -lasound -pthread -o bin/test
+bin/test: bin/ $(objdir) $(objects)
+	g++ $(objects) lib/libportaudio.a lib/*.o -lrt -lm -lasound -pthread \
+		-o $@
 
 bin/ :
 	mkdir bin/
 
-build/ : 
-	mkdir build/
+$(objdir) : 
+	mkdir $(objdir)
 
-build/test.o : src/test.cpp src/core/AudioPlayer.h src/core/NotePicker.h src/core/SignalGenerator.h
-	g++ -c -I include/ src/test.cpp -o build/test.o
+$(objdir)/test.o : test.cpp AudioPlayer.h NotePicker.h SignalGenerator.h
+	g++ -c -I include/ src/test.cpp -o $@
 
-build/AudioPlayer.o : src/core/AudioPlayer.h src/core/AudioPlayer.cpp
-	g++ -c -I include/ src/core/AudioPlayer.cpp -o build/AudioPlayer.o
+$(objdir)/AudioPlayer.o : AudioPlayer.h AudioPlayer.cpp
+	g++ -c -I include/ src/core/AudioPlayer.cpp -o $@
 
-build/NotePicker.o : src/core/NotePicker.h src/core/NotePicker.cpp
-	g++ -c src/core/NotePicker.cpp -o build/NotePicker.o
+$(objdir)/NotePicker.o : NotePicker.h NotePicker.cpp
+	g++ -c src/core/NotePicker.cpp -o $@
 
-build/SignalGenerator.o : src/core/SignalReader.h src/core/SignalGenerator.h src/core/SignalGenerator.cpp
-	g++ -c src/core/SignalGenerator.cpp -o build/SignalGenerator.o
+$(objdir)/SignalGenerator.o : SignalReader.h SignalGenerator.h \
+	 SignalGenerator.cpp
+	g++ -c src/core/SignalGenerator.cpp -o $@
 
-build/SignalReader.o : src/core/SignalReader.h src/core/SignalReader.cpp
-	g++ -c src/core/SignalReader.cpp -o build/SignalReader.o
+$(objdir)/SignalReader.o : SignalReader.h SignalReader.cpp
+	g++ -c src/core/SignalReader.cpp -o $@
 
 
 .PHONY : clean
 clean : 
-	-rm eargame $(objects)
+	-rm bin/test $(objects)
 	-rmdir bin/
-	-rmdir build/
+	-rmdir $(objdir)

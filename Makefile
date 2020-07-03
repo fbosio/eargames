@@ -1,3 +1,4 @@
+vpath %.a lib
 vpath %.cpp src src/core
 vpath %.h src src/core
 
@@ -6,9 +7,8 @@ objects = $(addsuffix .o, $(addprefix $(objdir)/, test AudioPlayer NotePicker \
 	  SignalGenerator SignalReader))
 
 
-bin/test: bin/ $(objdir) $(objects)
-	g++ $(objects) lib/libportaudio.a lib/*.o -lrt -lm -lasound -pthread \
-		-o $@
+bin/test: libportaudio.a bin/ $(objdir) $(objects)
+	g++ $(objects) $< lib/*.o -lrt -lm -lasound -pthread -o $@
 
 bin/ :
 	mkdir bin/
@@ -17,20 +17,20 @@ $(objdir) :
 	mkdir $(objdir)
 
 $(objdir)/test.o : test.cpp AudioPlayer.h NotePicker.h SignalGenerator.h
-	g++ -c -I include/ src/test.cpp -o $@
+	g++ -c -I include/ $< -o $@
 
-$(objdir)/AudioPlayer.o : AudioPlayer.h AudioPlayer.cpp
-	g++ -c -I include/ src/core/AudioPlayer.cpp -o $@
+$(objdir)/AudioPlayer.o : AudioPlayer.cpp AudioPlayer.h
+	g++ -c -I include/ $< -o $@
 
-$(objdir)/NotePicker.o : NotePicker.h NotePicker.cpp
-	g++ -c src/core/NotePicker.cpp -o $@
+$(objdir)/NotePicker.o : NotePicker.cpp NotePicker.h
+	g++ -c $< -o $@
 
-$(objdir)/SignalGenerator.o : SignalReader.h SignalGenerator.h \
-	 SignalGenerator.cpp
-	g++ -c src/core/SignalGenerator.cpp -o $@
+$(objdir)/SignalGenerator.o : SignalGenerator.cpp SignalReader.h \
+	 SignalGenerator.h
+	g++ -c $< -o $@
 
-$(objdir)/SignalReader.o : SignalReader.h SignalReader.cpp
-	g++ -c src/core/SignalReader.cpp -o $@
+$(objdir)/SignalReader.o : SignalReader.cpp SignalReader.h
+	g++ -c $< -o $@
 
 
 .PHONY : clean

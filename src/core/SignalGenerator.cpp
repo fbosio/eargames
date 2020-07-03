@@ -23,3 +23,10 @@ SignalReader SignalGenerator::generate(float frequency, float amplitude)
 
 	return reader;
 }
+
+SignalReader SignalGenerator::generate()
+{
+	SignalReader reader(signal, samplingFrequency);
+
+	return reader;
+}

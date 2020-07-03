@@ -28,6 +28,8 @@ class SignalGenerator {
 		 */
 		SignalReader generate(float frequency, float amplitude = 0.125f);
 
+		SignalReader generate();
+
 	private:
 		float samplingFrequency;
 		unsigned int samplesNumber;

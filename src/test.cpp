@@ -14,17 +14,23 @@ float hertzFromNumber(int semitoneNumber)
 
 int main(int, char* [])
 {
+	// Pick an int between 0 and 11 which is a note in the central octave.
 	NotePicker picker;
 	int noteIndex = picker.pickIndex();
 
+	// Define discrete points of a sine wave and create a reader for them
 	const auto samplingFrequency = 44100;
-	SignalGenerator generator(samplingFrequency, 16.0f);
+	const auto lowestFrequency = 16;
+	SignalGenerator generator(samplingFrequency, lowestFrequency);
 	auto reader = generator.generate(hertzFromNumber(noteIndex));
 
+	// Create a player that will use the sine wave of the reader
 	const auto duration = 1;
 	const auto bufferSize = 512;
 	AudioPlayer player(reader, duration, samplingFrequency, bufferSize);
 
+
+	// Play music notes and scales
 	std::cout << "Some random note: " << picker.note(noteIndex) << '\n';
 	player.play();
 
@@ -52,6 +58,7 @@ int main(int, char* [])
 	reader.setStep(hertzFromNumber(4));
 	player.duration = 1;
 	player.play();
+
 
 	return 0;
 }

@@ -3,18 +3,25 @@ vpath %.cpp src src/core
 vpath %.h src src/core
 
 objdir = build
-objects = $(addsuffix .o, $(addprefix $(objdir)/, test AudioPlayer NotePicker \
+objects = $(addsuffix .o, $(addprefix $(objdir)/, AudioPlayer NotePicker \
 	  SignalGenerator SignalReader))
 
+bin/game: libportaudio.a bin/ $(objdir) $(objects) $(objdir)/game.o
+	g++ $(objects) $(objdir)/game.o $< lib/*.o -lrt -lm -lasound -pthread \
+		-o $@
 
-bin/test: libportaudio.a bin/ $(objdir) $(objects)
-	g++ $(objects) $< lib/*.o -lrt -lm -lasound -pthread -o $@
+bin/test: libportaudio.a bin/ $(objdir) $(objects) $(objdir)/test.o
+	g++ $(objects) $(objdir)/test.o $< lib/*.o -lrt -lm -lasound -pthread \
+		-o $@
 
 bin/ :
 	mkdir bin/
 
 $(objdir) : 
 	mkdir $(objdir)
+
+$(objdir)/game.o : main.cpp AudioPlayer.h NotePicker.h SignalGenerator.h
+	g++ -c -I include/ $< -o $@
 
 $(objdir)/test.o : test.cpp AudioPlayer.h NotePicker.h SignalGenerator.h
 	g++ -c -I include/ $< -o $@
@@ -35,6 +42,6 @@ $(objdir)/SignalReader.o : SignalReader.cpp SignalReader.h
 
 .PHONY : clean
 clean : 
-	-rm bin/test $(objects)
+	-rm bin/game bin/test $(objects) $(objdir)/game.o $(objdir)/test.o
 	-rmdir bin/
 	-rmdir $(objdir)

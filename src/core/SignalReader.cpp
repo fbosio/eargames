@@ -3,6 +3,12 @@
 #include <iostream>
 
 
+SignalReader::SignalReader(const std::valarray<float>& signal,
+		float samplingFrequency) : signal(signal), step(1),
+       	samplingFrequency(samplingFrequency), n(0)
+{
+}
+
 SignalReader::SignalReader(const std::valarray<float>& signal, float frequency,
 	       	float samplingFrequency) : signal(signal),
        	step((frequency/samplingFrequency)*signal.size()),
